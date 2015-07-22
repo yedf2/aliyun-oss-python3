@@ -7,8 +7,10 @@ try:
 except ImportError:
     import urllib2 as urllib
 
-accessKeyId = 'xxxxx'
-accessKeySecret = 'xxxxx'
+accessKeyId = 'ic20Gwxms6ynLlkx'
+accessKeySecret = 'lhTBND3SHvSawihEcIL6LFz597xtMj'
+bucket = 'fast-loan'
+region_host =  'oss-cn-hangzhou.aliyuncs.com'
 
 # use signature in url
 def _oss_file_url(method, bucket, filename, content_type):
@@ -19,8 +21,8 @@ def _oss_file_url(method, bucket, filename, content_type):
         tosign = "%s\n\n%s\n%d\n/%s/%s" % (method, content_type, expire, bucket, filename)
     h = hmac.new(accessKeySecret.encode(), tosign.encode(), sha1)
     sign = urllib.quote(base64.encodestring(h.digest()).strip())
-    return 'http://%s.oss-cn-hangzhou.aliyuncs.com/%s?OSSAccessKeyId=%s&Expires=%d&Signature=%s' % (
-        bucket, filename, accessKeyId, expire, sign
+    return 'http://%s.%s/%s?OSSAccessKeyId=%s&Expires=%d&Signature=%s' % (
+        bucket, region_host, filename, accessKeyId, expire, sign
     )
 
 def get_file_url(bucket, filename):
@@ -37,6 +39,6 @@ def http_put(bucket, filename, cont, content_type):
     except urllib.HTTPError as e:
         print(e)
 
-http_put('fast-loan', 'mytestkey', b'sample value', 'text/plain')
-url = get_file_url('fast-loan', 'mytestkey')
+http_put(bucket, 'mytestkey', b'sample value', 'text/plain')
+url = get_file_url(bucket, 'mytestkey')
 print(urllib.urlopen(url).read())
